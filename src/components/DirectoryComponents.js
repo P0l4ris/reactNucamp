@@ -1,31 +1,17 @@
 import React, { Component } from 'react';
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from 'reactstrap';
-import CampsiteInfo from './CampsiteInfoComponent';
+import { Card, CardImg, CardImgOverlay, CardTitle } from 'reactstrap';
+
 
 //this is the structure for a basic class component with constructor//
 class Directory extends Component {
-    constructor(props) {
-        super(props);
-        //importing array from another file in app.js this state was up to or "lifting state" from here Directory to App (parent)
-        this.state = {
-            //here we add an click event
-            selectedCampsite: null
-        };
-    }
-    //changes state of campsite to selectedCampsite?
-    onCampsiteSelect(campsite) {
-        this.setState({selectedCampsite: campsite});
-    }
-
-
-
+    
     render() {
         //an array of elements in here affected by map//
         const directory = this.props.campsites.map(campsite => {
             return (
                 <div key={campsite.id} className="col-md-5 m-1">
                     {/* here we pass the campsiteSelect(campsite is every specific card) as a function when onclick */}
-                    <Card onClick={() => this.onCampsiteSelect(campsite)}>
+                    <Card onClick={() => this.props.onClick(campsite.id)}>
                     <CardImg width="100%" src={campsite.image} alt={campsite.name} />
                     <CardImgOverlay>
                         <CardTitle>{campsite.name}</CardTitle>
@@ -42,7 +28,7 @@ class Directory extends Component {
                     {directory} 
                 </div>
                 {/* <ExampleParentComponent /> */}
-                <CampsiteInfo campsite= {this.state.selectedCampsite} />
+
             </div>
         );
     }
