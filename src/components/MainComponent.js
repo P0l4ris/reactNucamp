@@ -1,9 +1,13 @@
 import React, {Component}  from 'react';
+import Directory from './DirectoryComponents';
 import Header from './HeaderComponents';
 import Footer from './FooterComponent';
-import Directory from './DirectoryComponents';
-import { CAMPSITES } from '../shared/campsites';
 import CampsiteInfo from './CampsiteInfoComponent';
+import Home from './HomeComponent';
+import { CAMPSITES } from '../shared/campsites';
+//imported react router dom. brains of our router
+import { Switch, Route, Redirect } from 'react-router-dom';
+
 
 //now we have local state in App not the child Directory
 
@@ -13,20 +17,24 @@ class Main extends Component {
         super(props);
         this.state = {
                 campsites: CAMPSITES,
-                selectedCampsite: null
         };
     }
 
-      onCampsiteSelect(campsiteId) {
-        this.setState({selectedCampsite: campsiteId});
-    }
-
   render() {
+        const HomePage = () => {
+            return (
+                <Home />
+            );
+        }
       return (
           <div>
               <Header />
-              <Directory campsites={this.state.campsites} onClick={campsiteId => this.onCampsiteSelect(campsiteId)}  />
-              <CampsiteInfo campsite= {this.state.campsites.filter(campsite => campsite.id === this.state.selectedCampsite)[0]} />
+              <Switch>
+                  <Route path='/home' component={HomePage} />
+                  {/* here we use the boolean exact and routes are like case in switch*/}
+                  <Route exact path ='/directory' render={() => <Directory campsites={this.state.campsites} /> } />
+                  <Route to='/home' />
+              </Switch>
               <Footer />
           </div>
       );
