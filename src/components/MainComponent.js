@@ -5,7 +5,7 @@ import Footer from './FooterComponent';
 import CampsiteInfo from './CampsiteInfoComponent';
 import Home from './HomeComponent';
 import Contact from './ContactComponent';
-import About from '../shared/AboutComponent';
+import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 //transferring state to the redux store; no longer here
 import { connect } from 'react-redux';
@@ -65,7 +65,7 @@ class Main extends Component {
                   <Route path='/directory/:campsiteId' component={CampsiteWithId} />
                   <Route exact path='/contactus' component={Contact} />
                   <Route exact path='/aboutus' render ={() => <About partners={this.props.partners} /> } />
-                  <Route to='/home' />
+                  <Redirect to='/home' />
               </Switch>
               <Footer />
           </div>

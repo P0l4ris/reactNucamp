@@ -17,7 +17,6 @@ function RenderDirectoryItem({campsite}) {
 
 }
 
-//this is the structure for a basic class component with constructor//
 function Directory(props) {
 
         //an array of elements in here affected by map//
