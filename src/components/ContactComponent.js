@@ -279,7 +279,7 @@ class Contact extends Component {
                                 </Col>
                             </Row>
                             <Row className="form-group">
-                                <Col md={{size: 10, offset: 2}}>
+                                <Col>
                                     <Button type="submit" color="primary">
                                         Send Feedback
                                     </Button>
@@ -292,5 +292,8 @@ class Contact extends Component {
         );
     }    
 }
+
+
+
 
 export default Contact;
