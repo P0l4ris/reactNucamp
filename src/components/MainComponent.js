@@ -1,3 +1,5 @@
+//main component is a container and all these objects rendered here are children presentational component
+
 import React, {Component}  from 'react';
 import Directory from './DirectoryComponents';
 import Header from './HeaderComponents';
@@ -7,8 +9,10 @@ import Home from './HomeComponent';
 import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
-//transferring state to the redux store; no longer here
+import { addComment, fetchCampsites } from '../redux/ActionCreators';
+
 import { connect } from 'react-redux';
+//transferring state to the redux store; no longer here
 // import { CAMPSITES } from '../shared/campsites';
 // import { COMMENTS } from '../shared/comments';
 // import { PARTNERS } from '../shared/partners';
@@ -19,7 +23,21 @@ import { connect } from 'react-redux';
 
 
 
-//main component is a container and all these objects rendered here are children presentational component
+
+
+
+
+
+
+//these mapping functions create a new state to pass.....//
+
+
+//imported above, sent to page components; the action creators are in => and are now available to Main as props
+const mapDispatchToProps = {
+    addComment: (campsiteId, rating, author, text) => (addComment(campsiteId, rating, author, text)),
+    fetchCampsites: () => (fetchCampsites())
+
+};
 
 //in here, we pass state from redux as props
 const mapStateToProps = state => {
@@ -32,13 +50,18 @@ const mapStateToProps = state => {
 };
 
 class Main extends Component {
-  
+    //react method part of lifecycle. loaded, updates, and removed from DOM a good place to load at
+    componentDidMount() {
+        this.props.fetchCampsites();
+    }
 
   render() {
         const HomePage = () => {
             return (
-                <Home           
-                    campsite={this.props.campsites.filter(campsite => campsite.featured)[0]}
+                <Home        //campsites holds more than an array now. loading
+                    campsite={this.props.campsites.campsites.filter(campsite => campsite.featured)[0]}
+                    campsitesLoading={this.props.campsites.isLoading}
+                    campsitesErrMess={this.props.campsites.errMess}
                     promotion={this.props.promotions.filter(promotion => promotion.featured)[0]}
                     partner={this.props.partners.filter(partner => partner.featured)[0]}
                  />
@@ -48,8 +71,11 @@ class Main extends Component {
         const CampsiteWithId = ({match}) => {
             return (
                 <CampsiteInfo 
-                    campsite={this.props.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
-                    comments={this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)} 
+                    campsite={this.props.campsites.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
+                    campsitesLoading={this.props.campsites.isLoading} //why need these 2 here
+                    campsitesErrMess={this.props.campsites.errMess}
+                    comments={this.props.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)}
+                    addComment= {this.props.addComment} //passed props with mapDispatch below to CampsiteInfo
                 />
             );
         };
@@ -74,4 +100,5 @@ class Main extends Component {
 }
 
 //react router to work with changes to the export?
-export default withRouter(connect(mapStateToProps)(Main));
+//withRouter is routing; connect is state mapping + action mapping as a prop on this page where it doesn't exist as local state. I made both of these here up above. these changes go to the redux store
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
