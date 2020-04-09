@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row, } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { Control, LocalForm, Errors } from 'react-redux-form';
+import { Control, Form, Errors, actions } from 'react-redux-form';
 
 //receives value as an argument. these inputs are strings. validation
 const required = val => val && val.length;
@@ -32,69 +32,11 @@ class Contact extends Component {
                 email: false
             }
         };
-
-        //we can use this with handleIC and it can refer to correct object
-        //nvm we got rid of it and gave redux state control
         this.handleSubmit = this.handleSubmit.bind(this);
     }    
 
 
-//getting rid of validation here and giving redux state for changes
-//     validate(firstName, lastName, phoneNum, email) {
-// //why return empty strings? oh, so they can proceed to fill it out
-//         const errors = {
-//             firstName: '',
-//             lastName: '',
-//             phoneNum: '',
-//             email: '',
-//         };
-
-//         if (this.state.touched.firstName) {
-//             if (firstName.length < 2) {
-//                 errors.firstName = 'First name must be at least 2 characters.';
-//             } else if (firstName.length > 15) {
-//                 errors.firstName = 'First name must be 15 or less characters.';
-//             }
-//         }
-
-//         if (this.state.touched.lastName) {
-//             if (lastName.length < 2) {
-//                 errors.lastName = 'Last name must be at least 2 characters.';
-//             } else if (lastName.length > 15) {
-//                 errors.lastName = 'Last name must be 15 or less characters.';
-//             }
-//         }
-
-//         const reg = /^\d+$/;
-//             if (this.state.touched.phoneNum && !reg.test(phoneNum)) {
-//             errors.phoneNum = 'The phone number should contain only numbers.';
-//         }
-
-//         if (this.state.touched.email && !email.includes('@')) {
-//             errors.email = 'Email should contain a @';
-//         }
-
-//         return errors;
-
-//     }
-
-    // //instead of binding, you can automatically do it all with an arrow function
-    // handleBlur = (field) => () => {
-    //     this.setState({
-    //         touched: {...this.state.touched, [field]: true}
-    //     });
-    // }
-
-    // handleInputChange(event) {
-    //     const target = event.target;
-    //     const name = target.name;
-    //     const value = target.type === 'checkbox' ? target.checked : target.value;
-   
-    //     this.setState({
-    //         //the target's name is the new state for event?
-    //         [name]: value //this is from the const value above
-    //     });
-    // }
+//
     
     //logs current state to console
     handleSubmit(values) {
@@ -102,11 +44,10 @@ class Contact extends Component {
         // makes a string from JS object
         alert('Current state is: ' + JSON.stringify(values));
         // event.preventDefault(); redux will handle this now.
+        this.props.resetFeedbackForm();
     }
 
     render() {
-        //rid of this call for validate function
-        // const errors = this.validate(this.state.firstName, this.state.lastName,this.state.phoneNum, this.state.email);
         return (
             <div className="container">
                 <div className="row">
@@ -142,7 +83,7 @@ class Contact extends Component {
                       <hr />
                    </div>
                     <div className="col-md-10">
-                        <LocalForm onSubmit={ values => this.handleSubmit(values)}>
+                        <Form model="feedbackForm" onSubmit={ values => this.handleSubmit(values)}>
                             {/* got rid of form group for react strap */}
                             <Row className="form-group">
                                 <Label htmlFor="firstName" md={2}>First Name</Label>
@@ -285,7 +226,7 @@ class Contact extends Component {
                                     </Button>
                                 </Col>
                             </Row>
-                        </LocalForm>
+                        </Form>
                     </div>
                 </div>
             </div>   
