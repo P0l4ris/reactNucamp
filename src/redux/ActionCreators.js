@@ -26,10 +26,26 @@ export const fetchCampsites = () => dispatch => {
 
     return fetch(baseUrl + 'campsites') //location of campsites for the fetch promise. Url and its location in it
         //response.json turns the representation to javascript as a new promise
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                //wont move on, error with response/response.status are informative built in properties. throw it the catch-end.
+                const error = new Error(`Error ${response.status}: ${response.statusText}`);  //404s?
+                error.response = response;
+                throw error; 
+            }
+            },
+            //error for rejected promise in this .then regardless. that means .then promise never even worked
+            error => {
+                const errMess = new Error(error.message);
+                throw errMess;
+            }
+        )
         .then(response => response.json()) //the promise chained
-        .then(campsites => dispatch(addCampsites(campsites))); //the array dispatched with the action creator
-
-        //no errors yet
+        .then(campsites => dispatch(addCampsites(campsites))) //the array dispatched with the action creator
+        .catch(error => dispatch(campsitesFailed(error.message))); 
+        //this error catches the any of ALL failed .then promises here
 }
 
 
@@ -54,8 +70,25 @@ export const addCampsites = campsites => ({
 //another thunk 
 export const fetchComments = () => dispatch => {    
     return fetch(baseUrl + 'comments')
-    .then(response => response.json())
-    .then(comments => dispatch(addComments(comments)));
+
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`); 
+            error.response = response;
+            throw error; 
+        }
+    },
+        error => {
+            const errMess = new Error(error.message);
+            throw errMess;
+        }
+    )
+        .then(response => response.json())
+        .then(comments => dispatch(addComments(comments)))
+        .catch(error => dispatch(commentsFailed(error.message)));
+
 };
 
 
@@ -75,8 +108,24 @@ export const fetchPromotions = () => dispatch => {
     dispatch(promotionsLoading());
 
     return fetch(baseUrl + 'promotions')
+    .then(response => {
+        if (response.ok) {
+            return response;
+        } else {
+            const error = new Error(`Error ${response.status}: ${response.statusText}`); 
+            error.response = response;
+            throw error; 
+        }
+    },
+        error => {
+            const errMess = new Error(error.message);
+            throw errMess;
+        }
+    )
     .then(response => response.json())
-    .then(promotions => dispatch(addPromotions(promotions)));
+    .then(promotions => dispatch(addPromotions(promotions)))
+    .catch(error => dispatch(promotionsFailed(error.message)));
+
 }
 
 //regular action creator 
