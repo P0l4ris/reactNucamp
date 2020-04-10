@@ -27,7 +27,7 @@ function RenderCampsite({campsite}) {
     )
 }
 
-function RenderComments({comments, addComment, campsiteId}) {
+function RenderComments({comments, postComment, campsiteId}) {
         if(comments) {
             return (
                 <div className="col-md-5 m-1">
@@ -40,7 +40,7 @@ function RenderComments({comments, addComment, campsiteId}) {
                                 )}
 
                         )}
-                        <CommentForm campsiteId={campsiteId} addComment={addComment} />
+                        <CommentForm campsiteId={campsiteId} postComment={postComment} />
                 </div>
             )
         }
@@ -85,9 +85,9 @@ function CampsiteInfo(props) {
                     <div className="row">
                     <RenderCampsite campsite={props.campsite} />
                     <RenderComments 
-                    comments={props.comments} 
-                    addComment={props.addComment}
+                    comments={props.comments}
                     campsiteId={props.campsiteId}
+                    postComment={props.postComment}
                     />
                     </div>
                 </div>
@@ -109,7 +109,7 @@ class CommentForm extends Component {
         
         this.toggleModal = this.toggleModal.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        // this.postComment = this.props.postComment.bind(this);
     }
 
     toggleModal() {
@@ -119,8 +119,8 @@ class CommentForm extends Component {
     }
 
     handleSubmit(values) {
-        // this.toggleModal(); why does Minae have this in here
-        this.props.addComment(this.props.campsiteId, values.rating, values.author, values.text); //changes current state on submit
+        this.toggleModal(); //why does Minae have this in here
+        this.props.postComment(this.props.campsiteId, values.rating, values.author, values.text); //changes current state on submit
 
     }
     render() {

@@ -8,18 +8,9 @@ import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
 
-export const addComment = (campsiteId, rating, author, text) => ({
-    type: ActionTypes.ADD_COMMENT,
-    payload: {
-        campsiteId: campsiteId,
-        //if identifier of property is same as value, just write it once.
-        rating: rating,
-        author: author,
-        text: text
-    }
-});
 
-//***thunk syntax, function in another function =>x2
+
+//***thunk syntax and fetch for campsites, *function in another function =>x2
 export const fetchCampsites = () => dispatch => {
 
     dispatch(campsitesLoading()); //an action while the page loads. the next action creator below
@@ -47,15 +38,11 @@ export const fetchCampsites = () => dispatch => {
         .catch(error => dispatch(campsitesFailed(error.message))); 
         //this error catches the any of ALL failed .then promises here
 }
-
-
-
 //not thunk, regular action creator syntax ONE => like the first one at the top
 export const campsitesLoading = () => ({
     type: ActionTypes.CAMPSITES_LOADING
     //no payload
 });
-
 
 export const campsitesFailed = errMess => ({
     type: ActionTypes.CAMPSITES_FAILED,
@@ -67,7 +54,11 @@ export const addCampsites = campsites => ({
     payload: campsites
 });
 
-//another thunk 
+
+
+
+
+//another thunk and fetch for comments
 export const fetchComments = () => dispatch => {    
     return fetch(baseUrl + 'comments')
 
@@ -103,28 +94,81 @@ export const addComments = comments => ({
     payload: comments
 });
 
-//thunk
+//only local state on this one. no fetch
+export const addComment = comment => ({
+    type: ActionTypes.ADD_COMMENT,
+    payload: comment
+});
+
+//asynchronous action posting with fetch with thunk 
+export const postComment = (campsiteId, rating, author, text) => dispatch => {
+    //will hold all these objects newComment
+    const newComment =  {
+        campsiteId: campsiteId,
+        //if identifier of property is same as value, just write it once.
+        rating: rating,
+        author: author,
+        text: text
+    };
+    newComment.date = new Date().toISOString();
+
+    //specify method or defaults to GET. posts body info and gives server header object. expects to see json
+    return fetch(baseUrl + 'comments', {
+        method: "POST",
+        body: JSON.stringify(newComment),
+        headers: {
+            "Content-Type": "application/json"
+        }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                const error = new Error(`Error ${response.status}: ${response.statusText}`); 
+                error.response = response;
+                throw error; 
+            }
+        },
+        error => { throw error; }
+        )
+        //after, server takes response-returns it back with unique ID and presented as json
+        .then(response => response.json())
+        .then(response => dispatch(addComment(response)))
+        .catch(error => {
+            console.log('post comment', error.message);
+            alert('Your comment could not be posted\nError: ' + error.message);
+        })
+
+};
+
+
+
+
+
+
+
+//thunk and fetch for promotions
 export const fetchPromotions = () => dispatch => {
     dispatch(promotionsLoading());
 
     return fetch(baseUrl + 'promotions')
-    .then(response => {
-        if (response.ok) {
-            return response;
-        } else {
-            const error = new Error(`Error ${response.status}: ${response.statusText}`); 
-            error.response = response;
-            throw error; 
-        }
-    },
-        error => {
-            const errMess = new Error(error.message);
-            throw errMess;
-        }
-    )
-    .then(response => response.json())
-    .then(promotions => dispatch(addPromotions(promotions)))
-    .catch(error => dispatch(promotionsFailed(error.message)));
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                const error = new Error(`Error ${response.status}: ${response.statusText}`); 
+                error.response = response;
+                throw error; 
+            }
+        },
+            error => {
+                const errMess = new Error(error.message);
+                throw errMess;
+            }
+        )
+        .then(response => response.json())
+        .then(promotions => dispatch(addPromotions(promotions)))
+        .catch(error => dispatch(promotionsFailed(error.message)));
 
 }
 

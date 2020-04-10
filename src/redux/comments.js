@@ -15,8 +15,6 @@ export const Comments = (state = { errMess: null, comments: []}, action) => {
             return {...state, errMess: action.payload};
         case ActionTypes.ADD_COMMENT:
                 const comment = action.payload;
-                comment.id = state.comments.length; //number in array
-            comment.date = new Date().toISOString();
             return {...state, comments: state.comments.concat(comment)}; //adds comment to array... but now we spread original state + new comm.
         default:
             return state;

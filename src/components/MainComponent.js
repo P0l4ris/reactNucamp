@@ -10,7 +10,8 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { actions } from 'react-redux-form';
-import { addComment, fetchCampsites, fetchComments, fetchPromotions } from '../redux/ActionCreators';
+import { postComment, fetchCampsites, fetchComments, fetchPromotions } from '../redux/ActionCreators';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { connect } from 'react-redux';
 //transferring state to the redux store; no longer here
@@ -35,7 +36,7 @@ import { connect } from 'react-redux';
 
 //imported above, sent to page components; the action creators are in => and are now available to Main as props
 const mapDispatchToProps = {
-    addComment: (campsiteId, rating, author, text) => (addComment(campsiteId, rating, author, text)),
+    postComment: (campsiteId, rating, author, text) => (postComment(campsiteId, rating, author, text)),
     fetchCampsites: () => (fetchCampsites()),
     //i think actions.reset saves state and then resets on submission
     resetFeedbackForm: () => (actions.reset('feedbackForm')),
@@ -81,11 +82,12 @@ class Main extends Component {
             return (
                 <CampsiteInfo 
                     campsite={this.props.campsites.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
-                    campsitesLoading={this.props.campsites.isLoading} //why need these 2 here
+                    campsitesLoading={this.props.campsites.isLoading} //why need these 2
                     campsitesErrMess={this.props.campsites.errMess}
                     comments={this.props.comments.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)}
                     commentsErrMess={this.props.comments.errMess}
-                    addComment= {this.props.addComment} //passed props with mapDispatch below to CampsiteInfo
+                    postComment={this.props.postComment}
+                    //passed props with mapDispatch below to CampsiteInfo
                 />
             );
         };
@@ -94,15 +96,20 @@ class Main extends Component {
       return (
           <div>
               <Header />
-              <Switch>
-                  <Route path='/home' component={HomePage} />
-                  <Route exact path ='/directory' render={() => <Directory campsites={this.props.campsites} /> } />
-                  {/* this colon stores what comes after directory as a parameter in an object called campsiteId..it's like a tracker. part of the route components state "match". Match's object gets passed as a prop for the object CampsiteWithId line:40*/}
-                  <Route path='/directory/:campsiteId' component={CampsiteWithId} />
-                  <Route exact path='/contactus' render={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} /> } />
-                  <Route exact path='/aboutus' render ={() => <About partners={this.props.partners} /> } />
-                  <Redirect to='/home' />
-              </Switch>
+              <TransitionGroup>
+                  {/* the key is for route's key and className'S' looks to apply transitions with whatever word is its value 'page' in CSS its a link*/}
+                  <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+                        <Switch>
+                            <Route path='/home' component={HomePage} />
+                            <Route exact path ='/directory' render={() => <Directory campsites={this.props.campsites} /> } />
+                            {/* this colon stores what comes after directory as a parameter in an object called campsiteId..it's like a tracker. part of the route components state "match". Match's object gets passed as a prop for the object CampsiteWithId line:40*/}
+                            <Route path='/directory/:campsiteId' component={CampsiteWithId} />
+                            <Route exact path='/contactus' render={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} /> } />
+                            <Route exact path='/aboutus' render ={() => <About partners={this.props.partners} /> } />
+                            <Redirect to='/home' />
+                        </Switch>
+                    </CSSTransition>
+                </TransitionGroup>
               <Footer />
           </div>
       );
