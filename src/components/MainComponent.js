@@ -10,7 +10,7 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { actions } from 'react-redux-form';
-import { postComment, fetchCampsites, fetchComments, fetchPromotions } from '../redux/ActionCreators';
+import { postComment, fetchCampsites, fetchComments, fetchPromotions, fetchPartners, postFeedback } from '../redux/ActionCreators';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 import { connect } from 'react-redux';
@@ -35,13 +35,16 @@ import { connect } from 'react-redux';
 
 
 //imported above, sent to page components; the action creators are in => and are now available to Main as props
+
 const mapDispatchToProps = {
     postComment: (campsiteId, rating, author, text) => (postComment(campsiteId, rating, author, text)),
     fetchCampsites: () => (fetchCampsites()),
     //i think actions.reset saves state and then resets on submission
     resetFeedbackForm: () => (actions.reset('feedbackForm')),
     fetchComments: () => (fetchComments()),
-    fetchPromotions: () => (fetchPromotions())
+    fetchPromotions: () => (fetchPromotions()),
+    fetchPartners: () => (fetchPartners()),
+    postFeedback: (firstName, lastName, phoneNum, email, agree, contactType, message, feedback) => (postFeedback(firstName, lastName, phoneNum, email, agree, contactType, message, feedback))
 };
 
 //in here, we pass state from redux as props
@@ -60,6 +63,7 @@ class Main extends Component {
         this.props.fetchCampsites();
         this.props.fetchComments();
         this.props.fetchPromotions();
+        this.props.fetchPartners();
     }
 
   render() {
@@ -69,10 +73,16 @@ class Main extends Component {
                     campsite={this.props.campsites.campsites.filter(campsite => campsite.featured)[0]}
                     campsitesLoading={this.props.campsites.isLoading}
                     campsitesErrMess={this.props.campsites.errMess}
-                    partner={this.props.partners.filter(partner => partner.featured)[0]}
+
+                    partnersLoading={this.props.partners.isLoading}
+                    partnersErrMess={this.props.partners.errMess}
+                    partner={this.props.partners.partners.filter(partner => partner.featured)[0]}
+
                     promotion={this.props.promotions.promotions.filter(promotion => promotion.featured)[0]}
                     promotionLoading={this.props.promotions.isLoading}
                     promotionErrMess={this.props.promotions.errMess}
+
+
                    
                  />
             );
@@ -82,8 +92,8 @@ class Main extends Component {
             return (
                 <CampsiteInfo 
                     campsite={this.props.campsites.campsites.filter(campsite => campsite.id === +match.params.campsiteId)[0]}
-                    campsitesLoading={this.props.campsites.isLoading} //why need these 2
-                    campsitesErrMess={this.props.campsites.errMess}
+                    isLoading={this.props.campsites.isLoading} //why need these 2
+                    errMess={this.props.campsites.errMess}
                     comments={this.props.comments.comments.filter(comment => comment.campsiteId === +match.params.campsiteId)}
                     commentsErrMess={this.props.comments.errMess}
                     postComment={this.props.postComment}
@@ -104,7 +114,9 @@ class Main extends Component {
                             <Route exact path ='/directory' render={() => <Directory campsites={this.props.campsites} /> } />
                             {/* this colon stores what comes after directory as a parameter in an object called campsiteId..it's like a tracker. part of the route components state "match". Match's object gets passed as a prop for the object CampsiteWithId line:40*/}
                             <Route path='/directory/:campsiteId' component={CampsiteWithId} />
-                            <Route exact path='/contactus' render={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} /> } />
+                            <Route exact path='/contactus' render={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback} /> } />
+
+
                             <Route exact path='/aboutus' render ={() => <About partners={this.props.partners} /> } />
                             <Redirect to='/home' />
                         </Switch>

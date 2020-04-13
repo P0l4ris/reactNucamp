@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Col, Row, } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { Control, Form, Errors, actions } from 'react-redux-form';
+import { Control, Form, Errors, } from 'react-redux-form';
+
+
+
 
 //receives value as an argument. these inputs are strings. validation
 const required = val => val && val.length;
@@ -24,6 +27,7 @@ class Contact extends Component {
             agree: false,
             contactType: 'By Phone',
             feedback: '',
+            message: '',
             // has the user touched these fields to enter validation
             touched: {
                 firstName: false,
@@ -40,10 +44,12 @@ class Contact extends Component {
     
     //logs current state to console
     handleSubmit(values) {
-        console.log('Current state is: ' + JSON.stringify(values));
-        // makes a string from JS object
-        alert('Current state is: ' + JSON.stringify(values));
-        // event.preventDefault(); redux will handle this now.
+
+        this.props.postFeedback(values.firstName, values.lastName, values.phoneNum, values.email, values.agree, values.contactType, values.message, values.feedback);
+        // console.log('Current state is: ' + JSON.stringify(values));
+        // // makes a string from JS object
+        // alert('Current state is: ' + JSON.stringify(values));
+        // // event.preventDefault(); redux will handle this now.
         this.props.resetFeedbackForm();
     }
 

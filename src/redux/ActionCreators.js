@@ -102,47 +102,43 @@ export const addComment = comment => ({
 
 //asynchronous action posting with fetch with thunk 
 export const postComment = (campsiteId, rating, author, text) => dispatch => {
-    //will hold all these objects newComment
-    const newComment =  {
+    
+    const newComment = {
         campsiteId: campsiteId,
-        //if identifier of property is same as value, just write it once.
         rating: rating,
         author: author,
         text: text
     };
     newComment.date = new Date().toISOString();
 
-    //specify method or defaults to GET. posts body info and gives server header object. expects to see json
     return fetch(baseUrl + 'comments', {
-        method: "POST",
-        body: JSON.stringify(newComment),
-        headers: {
-            "Content-Type": "application/json"
-        }
+            method: "POST",
+            body: JSON.stringify(newComment),
+            headers: {
+                "Content-Type": "application/json"
+            }
         })
         .then(response => {
-            if (response.ok) {
-                return response;
-            } else {
-                const error = new Error(`Error ${response.status}: ${response.statusText}`); 
-                error.response = response;
-                throw error; 
-            }
-        },
-        error => { throw error; }
+                if (response.ok) {
+                    return response;
+                } else {
+                    const error = new Error(`Error ${response.status}: ${response.statusText}`);
+                    error.response = response;
+                    throw error;
+                }
+            },
+            error => { throw error; }
         )
-        //after, server takes response-returns it back with unique ID and presented as json
         .then(response => response.json())
         .then(response => dispatch(addComment(response)))
         .catch(error => {
             console.log('post comment', error.message);
             alert('Your comment could not be posted\nError: ' + error.message);
-        })
-
+        });
 };
 
 
-
+ //promotions chunk
 
 
 
@@ -186,3 +182,84 @@ export const addPromotions = promotions => ({
     type: ActionTypes.ADD_PROMOTIONS,
     payload: promotions
 });
+
+
+
+
+
+//partners chunk
+
+
+export const fetchPartners = () => dispatch => {
+    dispatch(partnersLoading());
+
+    return fetch(baseUrl + 'partners')
+        .then(response => {
+            if (response.ok) {
+                return response;
+            } else {
+                const error = new Error(`Error ${response.status}: ${response.statusText}`); 
+                error.response = response;
+                throw error; 
+            }
+        },
+            error => {
+                const errMess = new Error(error.message);
+                throw errMess;
+            }
+        )
+        .then(response => response.json())
+        .then(partners => dispatch(addPartners(partners)))
+        .catch(error => dispatch(partnersFailed(error.message)));
+
+}
+
+export const partnersLoading = () => ({
+    type: ActionTypes.PARTNERS_LOADING
+});
+
+export const partnersFailed = errMess => ({
+    type: ActionTypes.PARTNERS_FAILED,
+    payload: errMess
+});
+
+export const addPartners = partners => ({
+    type: ActionTypes.ADD_PARTNERS,
+    payload: partners
+});
+
+
+
+
+
+
+
+export const postFeedback = (firstName, lastName, phoneNum, email, agree, contactType, message, feedback) => dispatch => {
+    
+    const feedBack = {
+        firstName: firstName,
+        lastName: lastName,
+        phoneNum: phoneNum,
+        email: email,
+        agree: agree,
+        contactType: contactType,
+        feedback: feedback,
+        message: ""
+    };
+
+    //feedBack.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'feedback', {
+            method: "POST",
+            body: JSON.stringify(feedBack),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return alert('Thanks for your feedback!'+ JSON.stringify(feedBack));
+            }
+        
+    });
+};

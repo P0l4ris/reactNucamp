@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Row, Button, Modal, ModalHeader, ModalBody, Col, Label} from 'reactstrap';
+import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Row, Button, Modal, ModalHeader, ModalBody, Col, Label} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import {Component} from 'react';
 import { Control, LocalForm, Errors } from 'react-redux-form';
@@ -99,7 +99,7 @@ function CampsiteInfo(props) {
                     <RenderCampsite campsite={props.campsite} />
                     <RenderComments 
                     comments={props.comments}
-                    campsiteId={props.campsiteId}
+                    campsiteId={props.campsite.id}
                     postComment={props.postComment}
                     />
                     </div>
@@ -122,7 +122,7 @@ class CommentForm extends Component {
         
         this.toggleModal = this.toggleModal.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        // this.postComment = this.props.postComment.bind(this);
+        //this.postComment = this.props.postComment.bind(this);
     }
 
     toggleModal() {
@@ -139,11 +139,11 @@ class CommentForm extends Component {
     render() {
         return(
             <React.Fragment>
-            <Button outline onClick={this.toggleModal} className="fa fa-pencil"> Submit Comment</Button>
+            <Button outline onClick={this.toggleModal} className="fa fa-pencil">Submit Comment</Button>
             <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
                     <ModalHeader toggle={this.toggleModal}>Login</ModalHeader>
                     <ModalBody>
-                        <LocalForm onSubmit={ values => this.handleSubmit(values)}>
+                        <LocalForm onSubmit={values => this.handleSubmit(values)}>
                         <Row className="form-group">
                             <Col>
                             <Label htmlFor="rating">Rating</Label>
@@ -170,6 +170,7 @@ class CommentForm extends Component {
                                     <Errors
                                         className="text-danger"
                                         model=".author"
+                                        show="touched"
                                         component="div"
                                         messages={{
                                             minLength: 'Must be at least 2 characters',
