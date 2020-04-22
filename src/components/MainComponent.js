@@ -44,7 +44,7 @@ const mapDispatchToProps = {
     fetchComments: () => (fetchComments()),
     fetchPromotions: () => (fetchPromotions()),
     fetchPartners: () => (fetchPartners()),
-    postFeedback: (firstName, lastName, phoneNum, email, agree, contactType, message, feedback) => (postFeedback(firstName, lastName, phoneNum, email, agree, contactType, message, feedback))
+    postFeedback: (values) => (postFeedback(values))
 };
 
 //in here, we pass state from redux as props

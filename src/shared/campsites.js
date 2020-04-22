@@ -1,3 +1,5 @@
+//we dont even use these as db.json holds all of them.
+
 export const CAMPSITES = [
     {
         id: 0,

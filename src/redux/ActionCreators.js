@@ -258,8 +258,22 @@ export const postFeedback = (firstName, lastName, phoneNum, email, agree, contac
         })
         .then(response => {
             if (response.ok) {
-                return alert('Thanks for your feedback!'+ JSON.stringify(feedBack));
+                return response;
+            } else {
+                const error = new Error(`Error ${response.status}: ${response.statusText}`);
+                error.response = response;
+                throw error;
             }
-        
+        },
+        error => { throw error; }
+    )
+    .then(response => response.json())
+    .then(response => {
+        return alert('Thanks for your feedback!'+ JSON.stringify(response));
+        })
+    .catch(error => {
+        console.log('post comment', error.message);
+        alert('Your comment could not be posted\nError: ' + error.message);
     });
+
 };

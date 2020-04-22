@@ -104,7 +104,7 @@ class Header extends Component {
                                     innerRef={input => this.remember = input} />
                                 Remember me
                             </Label>
-                            {/*when you put type ina label, you don't need a htmlFor */}
+                            {/*when you put type in a label, you don't need a htmlFor */}
                         </FormGroup>
                         <Button type="submit" value="submit" color="primary">Login</Button>
                         </Form>
